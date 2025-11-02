@@ -16,10 +16,10 @@ export function useLists(uid: string | undefined) {
     return () => unsub();
   }, [uid]);
 
-  const createList = useCallback(async (title: string) => {
+  const createList = useCallback(async (title: string, clientId?: string): Promise<string | undefined> => {
     if (!uid) return;
     const order = lists.length > 0 ? Math.max(...lists.map((l) => l.order)) + 1 : 0;
-    await svcCreate(uid, title, order);
+    return await svcCreate(uid, title, order, clientId);
   }, [uid, lists]);
 
   const renameList = useCallback(async (listId: string, title: string) => {

@@ -1,6 +1,5 @@
 import { addDoc, arrayRemove, arrayUnion, collection, doc, getDoc, getDocs, onSnapshot, orderBy, query, updateDoc, where, writeBatch, type Unsubscribe } from 'firebase/firestore';
 import type { Item } from '../types';
-import { MAX_DEPTH } from '../types';
 import { db } from '../lib/firebase';
 import { userSubcollectionRef } from './db';
 
@@ -13,7 +12,7 @@ export function subscribeItems(uid: string, cb: (items: Item[]) => void): Unsubs
   });
 }
 
-export async function createRootItem(uid: string, listId: string, title: string): Promise<string> {
+export async function createRootItem(uid: string, listId: string, title: string, clientId?: string): Promise<string> {
   const siblingsSnap = await getDocs(query(userSubcollectionRef<Item>(uid, 'items'), where('listId', '==', listId), where('parentId', '==', null)));
   const nextOrder = siblingsSnap.size;
   const ref = await addDoc(userSubcollectionRef<Item>(uid, 'items'), {
@@ -24,17 +23,18 @@ export async function createRootItem(uid: string, listId: string, title: string)
     parentId: null,
     path: [],
     order: nextOrder,
+    ...(clientId ? { clientId } : {}),
   } satisfies Omit<Item, 'id'>);
   return ref.id;
 }
 
-export async function createChildItem(uid: string, parentId: string, title: string): Promise<string | null> {
+export async function createChildItem(uid: string, parentId: string, title: string, clientId?: string, maxDepth = 4): Promise<string | null> {
   const parentRef = doc(userSubcollectionRef<Item>(uid, 'items'), parentId);
   const parentSnap = await getDoc(parentRef);
   if (!parentSnap.exists()) return null;
   const parent = { id: parentSnap.id, ...(parentSnap.data() as Omit<Item, 'id'>) } as Item;
   const newDepth = parent.path.length + 2; // parent depth + 1
-  if (newDepth > MAX_DEPTH) return null;
+  if (newDepth > maxDepth) return null;
   const childrenSnap = await getDocs(query(userSubcollectionRef<Item>(uid, 'items'), where('listId', '==', parent.listId), where('parentId', '==', parent.id)));
   const nextOrder = childrenSnap.size;
   const ref = await addDoc(userSubcollectionRef<Item>(uid, 'items'), {
@@ -45,6 +45,7 @@ export async function createChildItem(uid: string, parentId: string, title: stri
     parentId: parent.id,
     path: [...parent.path, parent.id],
     order: nextOrder,
+    ...(clientId ? { clientId } : {}),
   } satisfies Omit<Item, 'id'>);
   return ref.id;
 }
@@ -108,6 +109,7 @@ export async function reparentSubtree(
   targetListId: string,
   targetParentId: string | null,
   insertIndex?: number,
+  maxDepth = 4,
 ): Promise<void> {
   const rootRef = doc(userSubcollectionRef<Item>(uid, 'items'), itemId);
   const rootSnap = await getDoc(rootRef);
@@ -123,7 +125,7 @@ export async function reparentSubtree(
     // Depth guard
     const subtreeHeight = await computeSubtreeHeight(uid, root.id, root.listId);
     const newRootDepth = (targetParent.path.length + 1) + 1; // parent depth + 1
-    if (newRootDepth + (subtreeHeight - 1) > MAX_DEPTH) return;
+    if (newRootDepth + (subtreeHeight - 1) > maxDepth) return;
   }
 
   const batch = writeBatch(db);

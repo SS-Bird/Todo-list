@@ -11,9 +11,9 @@ export function subscribeLists(uid: string, cb: (lists: List[]) => void): Unsubs
   });
 }
 
-export async function createList(uid: string, title: string, order: number): Promise<string> {
+export async function createList(uid: string, title: string, order: number, clientId?: string): Promise<string> {
   const col = userSubcollectionRef<Omit<List, 'id'>>(uid, 'lists');
-  const docRef = await addDoc(col, { title, order });
+  const docRef = await addDoc(col, { title, order, ...(clientId ? { clientId } : {}) });
   return docRef.id;
 }
 

@@ -67,7 +67,7 @@ button:focus-visible {
 
   /* Column styles */
   .column {
-    @apply flex-none w-[400px] bg-slate-900 border border-slate-700 rounded-lg flex flex-col;
+    @apply flex-none w-fit bg-slate-900 border border-slate-700 rounded-lg flex flex-col;
     max-height: calc(100vh - 64px);
   }
 
@@ -104,8 +104,11 @@ button:focus-visible {
   }
 
   .icon-btn {
-    @apply p-1 rounded border border-transparent transition-colors duration-150;
+    @apply px-10 py-10 rounded border border-transparent transition-colors duration-150;
     @apply hover:border-slate-600 hover:bg-slate-700;
+    @apply flex-shrink-0 inline-flex items-center justify-center;
+    @apply bg-transparent;
+    padding: 6px 6px !important;
   }
 
   /* Input styles */

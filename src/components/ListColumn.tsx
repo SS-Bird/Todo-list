@@ -1,14 +1,17 @@
 import type { Item, List } from '../types';
-import { MAX_DEPTH } from '../types';
 import { TreeItem } from './TreeItem';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { useDroppable, useDndContext } from '@dnd-kit/core';
+import { DropSlot } from './DropSlot';
 import { useState } from 'react';
+import { MdDelete, MdEdit, MdAdd } from 'react-icons/md';
+import { RxDragHandleDots2 } from 'react-icons/rx';
 
 type ListColumnProps = {
   list: List;
   items: Item[];
   allLists: List[];
+  maxDepth: number;
   // spreadable props for making header a drag handle
   dragHandleProps?: Record<string, unknown>;
   highlight?: boolean;
@@ -30,6 +33,7 @@ export function ListColumn({
   list,
   items,
   allLists,
+  maxDepth,
   dragHandleProps,
   highlight = false,
   onAddRootItem,
@@ -78,11 +82,15 @@ export function ListColumn({
 
   return (
     <section className={`column ${highlight ? 'ring-2 ring-blue-500/40' : ''}`}>
-      <header
-        className={`column-header ${dragHandleProps ? 'cursor-grab' : ''}`}
-        {...(dragHandleProps || {})}
-      >
+      <header className="column-header">
         <div className="flex items-center gap-2 flex-1">
+          <span
+            className="opacity-50 hover:opacity-70 cursor-grab flex items-center justify-center"
+            {...(dragHandleProps || {})}
+            title="Drag list"
+          >
+            <RxDragHandleDots2 className="w-5 h-5" />
+          </span>
           {renaming ? (
             <input
               autoFocus
@@ -90,6 +98,7 @@ export function ListColumn({
               onChange={(e) => setTempTitle(e.target.value)}
               onBlur={commitRename}
               onKeyDown={(e) => {
+                e.stopPropagation();
                 if (e.key === 'Enter') commitRename();
                 if (e.key === 'Escape') {
                   setRenaming(false);
@@ -103,9 +112,9 @@ export function ListColumn({
           )}
         </div>
         <div className="flex gap-2">
-          {!renaming && <button className="icon-btn" title="Rename" onClick={() => setRenaming(true)}>✎</button>}
-          <button className="icon-btn" title="Delete list" onClick={() => onDeleteList(list.id)}>🗑︎</button>
-          <button className="icon-btn" title="Add task" onClick={() => onAddRootItem(list.id)}>＋</button>
+          {!renaming && <button className="icon-btn" title="Rename" onClick={() => setRenaming(true)}><MdEdit className="w-5 h-5" /></button>}
+          <button className="icon-btn" title="Delete list" onClick={() => onDeleteList(list.id)}><MdDelete className="w-5 h-5" /></button>
+          <button className="icon-btn" title="Add task" onClick={() => onAddRootItem(list.id)}><MdAdd className="w-5 h-5" /></button>
         </div>
       </header>
       <div ref={setRootDropRef} className={`column-content rounded bg-transparent transition-colors duration-150 ${isRootOver && isItemDrag ? 'bg-blue-500/20' : ''}`}>
@@ -114,12 +123,13 @@ export function ListColumn({
         ) : (
           <>
           <SortableContext items={topLevelActive.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-            {topLevelActive.map((item) => (
+            <DropSlot listId={list.id} parentId={null} index={0} />
+            {topLevelActive.map((item, i) => (
               <TreeItem
                 key={item.id}
                 item={item}
                 depth={1}
-                maxDepth={MAX_DEPTH}
+                maxDepth={maxDepth}
                 childrenByParent={childrenByParent}
                 allLists={allLists}
                 onAddChild={onAddChild}
@@ -134,6 +144,7 @@ export function ListColumn({
                 onMoveTopLevelToList={() => { /* removed for now */ }}
               />
             ))}
+            <DropSlot listId={list.id} parentId={null} index={topLevelActive.length} />
           </SortableContext>
           <div className="mt-3 border-t border-slate-700 pt-2">
             <button
@@ -147,12 +158,13 @@ export function ListColumn({
             {showCompleted && (
               <div className="mt-2">
                 <SortableContext items={topLevelCompleted.map((t) => t.id)} strategy={verticalListSortingStrategy}>
-                  {topLevelCompleted.map((item) => (
+                  <DropSlot listId={list.id} parentId={null} index={0} />
+                  {topLevelCompleted.map((item, i) => (
                     <TreeItem
                       key={item.id}
                       item={item}
                       depth={1}
-                      maxDepth={MAX_DEPTH}
+                      maxDepth={maxDepth}
                       childrenByParent={childrenByParent}
                       allLists={allLists}
                       onAddChild={onAddChild}
@@ -167,6 +179,7 @@ export function ListColumn({
                       onMoveTopLevelToList={() => { /* removed for now */ }}
                     />
                   ))}
+                  <DropSlot listId={list.id} parentId={null} index={topLevelCompleted.length} />
                 </SortableContext>
               </div>
             )}

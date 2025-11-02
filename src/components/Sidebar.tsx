@@ -1,5 +1,6 @@
 import type { List } from '../types';
 import { useState } from 'react';
+import { MdDelete, MdEdit, MdAdd } from 'react-icons/md';
 
 type SidebarProps = {
   lists: List[];
@@ -30,7 +31,7 @@ export function Sidebar({ lists, selectedListId, onSelectList, onAddList, onRena
     <aside className="w-[280px] border-r border-slate-700 p-4 box-border">
       <div className="flex items-center justify-between mb-3">
         <h2 className="m-0 text-[18px]">Lists</h2>
-        <button className="icon-btn" onClick={onAddList} title="Add list">＋</button>
+        <button className="icon-btn" onClick={onAddList} title="Add list"><MdAdd className="w-5 h-5" /></button>
       </div>
       <div>
         {[...lists].sort((a, b) => a.order - b.order).map((list) => {
@@ -48,6 +49,7 @@ export function Sidebar({ lists, selectedListId, onSelectList, onAddList, onRena
                     onChange={(e) => setTempTitle(e.target.value)}
                     onBlur={() => commitRename(list.id)}
                     onKeyDown={(e) => {
+                      e.stopPropagation();
                       if (e.key === 'Enter') commitRename(list.id);
                       if (e.key === 'Escape') {
                         setRenamingId(null);
@@ -62,8 +64,8 @@ export function Sidebar({ lists, selectedListId, onSelectList, onAddList, onRena
               </button>
               {renamingId !== list.id && (
                 <div className="flex gap-1.5">
-                  <button className="icon-btn" title="Rename" onClick={() => startRename(list)}>✎</button>
-                  <button className="icon-btn" title="Delete" onClick={() => onDeleteList(list.id)}>🗑︎</button>
+                  <button className="icon-btn" title="Rename" onClick={() => startRename(list)}><MdEdit className="w-5 h-5" /></button>
+                  <button className="icon-btn" title="Delete" onClick={() => onDeleteList(list.id)}><MdDelete className="w-5 h-5" /></button>
                 </div>
               )}
             </div>

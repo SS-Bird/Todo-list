@@ -8,6 +8,7 @@ type SortableListColumnProps = {
   list: List;
   items: Item[];
   allLists: List[];
+  maxDepth: number;
   onAddRootItem: (listId: string) => void;
   onAddChild: (parentId: string) => void;
   onToggleComplete: (itemId: string) => void;

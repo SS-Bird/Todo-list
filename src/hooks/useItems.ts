@@ -12,7 +12,7 @@ import {
   reparentSubtree as svcReparentSubtree,
 } from '../services/items';
 
-export function useItems(uid: string | undefined) {
+export function useItems(uid: string | undefined, maxDepth: number) {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState<boolean>(!!uid);
 
@@ -26,15 +26,15 @@ export function useItems(uid: string | undefined) {
     return () => unsub();
   }, [uid]);
 
-  const createRootItem = useCallback(async (listId: string, title: string) => {
+  const createRootItem = useCallback(async (listId: string, title: string, clientId?: string) => {
     if (!uid) return;
-    await svcCreateRoot(uid, listId, title);
+    await svcCreateRoot(uid, listId, title, clientId);
   }, [uid]);
 
-  const createChildItem = useCallback(async (parentId: string, title: string) => {
+  const createChildItem = useCallback(async (parentId: string, title: string, clientId?: string) => {
     if (!uid) return;
-    await svcCreateChild(uid, parentId, title);
-  }, [uid]);
+    await svcCreateChild(uid, parentId, title, clientId, maxDepth);
+  }, [uid, maxDepth]);
 
   const updateItem = useCallback(async (itemId: string, patch: Partial<Omit<Item, 'id'>>) => {
     if (!uid) return;
@@ -63,8 +63,8 @@ export function useItems(uid: string | undefined) {
 
   const reparentSubtree = useCallback(async (itemId: string, targetListId: string, targetParentId: string | null, insertIndex?: number) => {
     if (!uid) return;
-    await svcReparentSubtree(uid, itemId, targetListId, targetParentId, insertIndex);
-  }, [uid]);
+    await svcReparentSubtree(uid, itemId, targetListId, targetParentId, insertIndex, maxDepth);
+  }, [uid, maxDepth]);
 
   return useMemo(() => ({
     items,

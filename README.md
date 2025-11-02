@@ -1,73 +1,117 @@
-# React + TypeScript + Vite
+# Hierarchical Todo List App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web application that allows users to create hierarchical todo lists with drag-and-drop functionality, built with React, TypeScript, and Firebase.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Multi-user support**: Each user has their own isolated task data
+- **Authentication**: Sign up and sign in with Firebase Auth
+- **Multiple Lists**: Create and manage multiple todo lists
+- **Hierarchical Tasks**: Create tasks with up to 3 levels of sub-items
+- **Drag & Drop**: 
+  - Reorder lists horizontally
+  - Reorder tasks within lists
+  - Move tasks between lists
+  - Reparent tasks (change hierarchy)
+- **Task Management**:
+  - Mark tasks as complete/incomplete
+  - Collapse/expand task hierarchies
+  - Edit task titles inline
+  - Delete tasks and subtrees
+- **Real-time Updates**: Changes sync automatically across sessions
+- **Optimistic UI**: Immediate visual feedback for all operations
 
-## React Compiler
+## Installation
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
+- Node.js (version 18 or higher)
+- npm
 
-## Expanding the ESLint configuration
+### Setup Instructions
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Clone/Download the project**
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+3. **Start the development server:**
+   ```bash
+   npm start
+   ```
+4. **Open your browser and navigate to:**
+   ```
+   http://localhost:5173
+   ```
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The application will start in development mode with hot reloading enabled.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Project Structure
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+├── components/          # React components
+│   ├── Board.tsx       # Horizontal scrollable container
+│   ├── ListColumn.tsx  # Individual list column
+│   ├── TreeItem.tsx    # Hierarchical task component
+│   ├── DropSlot.tsx    # Drop zones for drag & drop
+│   └── ...
+├── hooks/              # Custom React hooks
+│   ├── useLists.ts     # List data management
+│   └── useItems.ts     # Task data management
+├── services/           # Firebase services
+│   ├── lists.ts        # Firestore operations for lists
+│   ├── items.ts        # Firestore operations for tasks
+│   └── auth.ts         # Authentication service
+├── auth/               # Authentication components
+├── types.ts            # TypeScript type definitions
+└── App.tsx             # Main application component
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Technical Implementation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Frontend**: React 19 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS
+- **Drag & Drop**: @dnd-kit library
+- **Backend**: Firebase (Firestore + Auth)
+- **State Management**: React hooks with optimistic updates
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## Usage
+
+1. **Sign up or sign in** when you first visit the app
+2. **Create lists** using the "+ New List" button
+3. **Add tasks** using the "+" button in each list
+4. **Create subtasks** using the "+" button on any task
+5. **Drag and drop** to reorder lists and tasks
+6. **Complete tasks** by checking the checkbox
+7. **Collapse/expand** task hierarchies using the arrow icons
+8. **Edit titles** by clicking directly on list or task names
+
+## MVP Requirements Met
+
+- ✅ Multi-user support with data isolation
+- ✅ User authentication (sign up/sign in)
+- ✅ Task completion marking
+- ✅ Task collapse/expand functionality
+- ✅ Move top-level tasks between lists
+- ✅ Durable data storage (Firebase Firestore)
+
+## Extensions Implemented
+
+- ✅ Advanced drag & drop for arbitrary task movement
+- ✅ Real-time synchronization
+- ✅ Optimistic UI updates
+- ✅ Configurable nesting depth
+- ✅ Visual drop indicators
+- ✅ Completed task sections
+
+## Available Scripts
+
+- `npm start` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## Browser Support
+
+This application works in all modern browsers that support ES2020+ features.
