@@ -10,7 +10,7 @@ type ListOverlayProps = {
 export function ListOverlay({ list, items, allLists }: ListOverlayProps) {
   // Render a read-only ListColumn clone for the drag preview
   return (
-    <div className="w-100">
+    <div className="w-[400px]">
       <ListColumn
         list={list}
         items={items}
@@ -102,7 +102,7 @@ export function ItemSubtreeOverlay({ root, items }: ItemSubtreeOverlayProps) {
   };
 
   return (
-    <div className="w-100">
+    <div className="w-[400px]">
       {renderSubtree(root)}
     </div>
   );

@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -69,7 +67,7 @@ button:focus-visible {
 
   /* Column styles */
   .column {
-    @apply flex-none w-100 bg-slate-900 border border-slate-700 rounded-lg flex flex-col;
+    @apply flex-none w-[400px] bg-slate-900 border border-slate-700 rounded-lg flex flex-col;
     max-height: calc(100vh - 64px);
   }
 
@@ -88,7 +86,7 @@ button:focus-visible {
   }
 
   .card:hover {
-    @apply border-slate-600 shadow-card;
+    @apply border-slate-600 shadow;
   }
 
   .card.dragging {
@@ -121,15 +119,7 @@ button:focus-visible {
     @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium border;
   }
 
-  .pill-gray {
-    @apply bg-status-gray-900/50 border-status-gray-700 text-status-gray-400;
-  }
-
-  .pill-blue {
-    @apply bg-status-blue-900/50 border-status-blue-700 text-status-blue-400;
-  }
-
-  .pill-green {
-    @apply bg-status-green-900/50 border-status-green-700 text-status-green-400;
-  }
+  .pill-gray { @apply bg-slate-800/60 border-slate-600 text-slate-400; }
+  .pill-blue  { @apply bg-blue-900/50 border-blue-700 text-blue-400; }
+  .pill-green { @apply bg-green-900/50 border-green-700 text-green-400; }
 }
