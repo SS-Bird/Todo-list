@@ -2,6 +2,10 @@ import type { List } from '../types';
 import { useState } from 'react';
 import { MdDelete, MdEdit, MdAdd } from 'react-icons/md';
 
+/**
+ * Sidebar component for list navigation and management.
+ * Provides an alternative view for managing lists (currently not used in main app).
+ */
 type SidebarProps = {
   lists: List[];
   selectedListId: string | null;
@@ -12,8 +16,8 @@ type SidebarProps = {
 };
 
 export function Sidebar({ lists, selectedListId, onSelectList, onAddList, onRenameList, onDeleteList }: SidebarProps) {
-  const [renamingId, setRenamingId] = useState<string | null>(null);
-  const [tempTitle, setTempTitle] = useState<string>('');
+  const [renamingId, setRenamingId] = useState<string | null>(null); // ID of list being renamed
+  const [tempTitle, setTempTitle] = useState<string>(''); // Temporary title during rename
 
   const startRename = (list: List) => {
     setRenamingId(list.id);

@@ -7,14 +7,26 @@ import { useState } from 'react';
 import { MdDelete, MdEdit, MdAdd } from 'react-icons/md';
 import { RxDragHandleDots2 } from 'react-icons/rx';
 
+/**
+ * List column component that displays a list and its hierarchical items.
+ * 
+ * This component:
+ * - Renders a list header with title, rename, delete, and add item buttons
+ * - Organizes items into active and completed sections
+ * - Builds a childrenByParent map for efficient hierarchy traversal
+ * - Renders root-level items using TreeItem (which recursively renders children)
+ * - Provides drop zones for reparenting operations
+ * 
+ * Items are separated into active (incomplete) and completed sections.
+ * Completed items are hidden by default in a collapsible section.
+ */
 type ListColumnProps = {
-  list: List;
-  items: Item[];
-  allLists: List[];
-  maxDepth: number;
-  // spreadable props for making header a drag handle
-  dragHandleProps?: Record<string, unknown>;
-  highlight?: boolean;
+  list: List; // The list to display
+  items: Item[]; // All items (filtered to this list internally)
+  allLists: List[]; // All lists (for cross-list operations)
+  maxDepth: number; // Maximum depth allowed
+  dragHandleProps?: Record<string, unknown>; // Props for making header a drag handle
+  highlight?: boolean; // Highlight this column (e.g., during drag operations)
   onAddRootItem: (listId: string) => void;
   onAddChild: (parentId: string) => void;
   onToggleComplete: (itemId: string) => void;
@@ -52,7 +64,11 @@ export function ListColumn({
   const [renaming, setRenaming] = useState(false);
   const [tempTitle, setTempTitle] = useState(list.title);
 
+  // Filter items to this list
   const listItems = items.filter((i) => i.listId === list.id);
+  
+  // Build childrenByParent map: parentId -> children array
+  // This map enables efficient child lookups for recursive rendering
   const childrenByParent = new Map<string | null, Item[]>();
   for (const it of listItems) {
     const k = it.parentId;
@@ -60,14 +76,18 @@ export function ListColumn({
     arr.push(it);
     childrenByParent.set(k, arr);
   }
+  // Sort children by order within each parent group
   for (const [k, arr] of childrenByParent) {
     arr.sort((a, b) => a.order - b.order);
     childrenByParent.set(k, arr);
   }
+  
+  // Get top-level items (parentId === null)
   const topLevel = childrenByParent.get(null) ?? [];
+  // Separate active and completed items
   const topLevelActive = topLevel.filter((t) => !t.completed);
   const topLevelCompleted = topLevel.filter((t) => t.completed);
-  const [showCompleted, setShowCompleted] = useState(false);
+  const [showCompleted, setShowCompleted] = useState(false); // Toggle completed section visibility
 
   const commitRename = () => {
     const next = tempTitle.trim();
@@ -75,10 +95,13 @@ export function ListColumn({
     setRenaming(false);
   };
 
-  // Top-level drop zone (drop here to make item a top-level in this list)
-  const { setNodeRef: setRootDropRef, isOver: isRootOver } = useDroppable({ id: `container:${list.id}:null`, data: { type: 'container', listId: list.id, parentId: null } });
+  // Create top-level drop zone: dropping an item here makes it a root item in this list
+  const { setNodeRef: setRootDropRef, isOver: isRootOver } = useDroppable({ 
+    id: `container:${list.id}:null`, 
+    data: { type: 'container', listId: list.id, parentId: null } 
+  });
   const { active } = useDndContext();
-  const isItemDrag = active?.data?.current?.type === 'item';
+  const isItemDrag = active?.data?.current?.type === 'item'; // Only highlight if dragging an item
 
   return (
     <section className={`column ${highlight ? 'ring-2 ring-blue-500/40' : ''}`}>
@@ -124,7 +147,7 @@ export function ListColumn({
           <>
           <SortableContext items={topLevelActive.map((t) => t.id)} strategy={verticalListSortingStrategy}>
             <DropSlot listId={list.id} parentId={null} index={0} />
-            {topLevelActive.map((item, i) => (
+            {topLevelActive.map((item) => (
               <TreeItem
                 key={item.id}
                 item={item}
@@ -159,7 +182,7 @@ export function ListColumn({
               <div className="mt-2">
                 <SortableContext items={topLevelCompleted.map((t) => t.id)} strategy={verticalListSortingStrategy}>
                   <DropSlot listId={list.id} parentId={null} index={0} />
-                  {topLevelCompleted.map((item, i) => (
+                  {topLevelCompleted.map((item) => (
                     <TreeItem
                       key={item.id}
                       item={item}

@@ -1,5 +1,9 @@
 import type { ChangeEvent } from 'react';
 
+/**
+ * Custom styled checkbox component.
+ * Provides a visually consistent checkbox with custom styling that matches the app theme.
+ */
 type CheckboxProps = {
   checked: boolean;
   onChange: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -10,6 +14,7 @@ type CheckboxProps = {
 export function Checkbox({ checked, onChange, title, disabled = false }: CheckboxProps) {
   return (
     <label className="relative inline-flex items-center cursor-pointer" title={title}>
+      {/* Hidden native checkbox for accessibility */}
       <input
         type="checkbox"
         checked={checked}
@@ -17,6 +22,7 @@ export function Checkbox({ checked, onChange, title, disabled = false }: Checkbo
         disabled={disabled}
         className="sr-only"
       />
+      {/* Custom styled checkbox visual */}
       <div className={`
         w-4 h-4 rounded border-2 transition-all duration-150 flex items-center justify-center
         ${checked 
@@ -25,6 +31,7 @@ export function Checkbox({ checked, onChange, title, disabled = false }: Checkbo
         }
         ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
       `}>
+        {/* Checkmark icon when checked */}
         {checked && (
           <svg
             className="w-3 h-3 text-white"
