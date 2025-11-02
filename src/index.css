@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: dark;
+  color: #e5e7eb; /* slate-200 */
+  background-color: #0a0f1a; /* slate-950 */
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+/* Custom component classes for the todo app */
+@layer components {
+  /* Board layout */
+  .board {
+    @apply flex gap-4 p-4 overflow-x-auto items-start;
+  }
+
+  /* Column styles */
+  .column {
+    @apply flex-none w-100 bg-slate-900 border border-slate-700 rounded-lg flex flex-col;
+    max-height: calc(100vh - 64px);
+  }
+
+  .column-header {
+    @apply flex items-center justify-between p-3 border-b border-slate-700;
+  }
+
+  .column-content {
+    @apply overflow-y-auto p-3;
+  }
+
+  /* Card/item styles */
+  .card {
+    @apply flex items-center gap-2 p-2 rounded-lg bg-slate-800 border border-slate-700 mb-1.5;
+    @apply transition-all duration-150 ease-out;
+  }
+
+  .card:hover {
+    @apply border-slate-600 shadow-card;
+  }
+
+  .card.dragging {
+    @apply opacity-60;
+  }
+
+  /* Button styles */
+  .btn {
+    @apply px-3 py-1.5 rounded-md border border-transparent font-medium transition-colors duration-150;
+    @apply bg-slate-800 text-slate-200 hover:border-slate-600;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700 border-blue-600;
+  }
+
+  .icon-btn {
+    @apply p-1 rounded border border-transparent transition-colors duration-150;
+    @apply hover:border-slate-600 hover:bg-slate-700;
+  }
+
+  /* Input styles */
+  .input {
+    @apply flex-1 bg-transparent text-slate-200 border border-slate-600 rounded px-2 py-1;
+    @apply focus:outline-none focus:border-slate-500 focus:ring-1 focus:ring-slate-500;
+  }
+
+  /* Status pills */
+  .pill {
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium border;
+  }
+
+  .pill-gray {
+    @apply bg-status-gray-900/50 border-status-gray-700 text-status-gray-400;
+  }
+
+  .pill-blue {
+    @apply bg-status-blue-900/50 border-status-blue-700 text-status-blue-400;
+  }
+
+  .pill-green {
+    @apply bg-status-green-900/50 border-status-green-700 text-status-green-400;
+  }
+}
